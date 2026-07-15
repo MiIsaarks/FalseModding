@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/Itens de Solução/">
+    <File Path="AssemblyInfo.cs" />
+  </Folder>
+  <Project Path="FalseModding/FalseModding.csproj" />
+</Solution>
