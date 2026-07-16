@@ -5,7 +5,9 @@ using EntityStates.FalseSon;
 using UnityEngine;
 using RoR2.Projectile;
 using RoR2.Skills;
-using RoR2.Networking;
+using UnityEngine.AddressableAssets;
+using System;
+
 
 namespace FalseSonTweak
 {
@@ -15,7 +17,10 @@ namespace FalseSonTweak
         private static float? originalDamage = null;
         public void Awake()
         {
-          
+            SkillDef FalseSonLaserF = Addressables.LoadAssetAsync<SkillDef>("RoR2/DLC2/FalseSon/FalseSonBodyLaser.asset").WaitForCompletion();
+
+            FalseSonLaserF.baseRechargeInterval = 10f;
+
             On.RoR2.FalseSonController.GetGrowthLaserBonusDuration += (orig, self) =>
             {
                 return 0f;
