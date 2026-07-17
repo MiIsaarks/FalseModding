@@ -9,7 +9,6 @@ using UnityEngine.AddressableAssets;
 using System;
 using R2API.Utils;
 
-
 namespace FalseSonTweak
 {
     [BepInPlugin("com.YourName.FalseSonDamageScaling", "FalseSonDamageScaling", "1.0.0")]
@@ -31,6 +30,28 @@ namespace FalseSonTweak
             On.RoR2.FalseSonController.GetGrowthLaserBonusDuration += (orig, self) =>
             {
                 return 0f;
+            };
+
+            On.RoR2.BulletAttack.Fire += (orig, self) =>
+            {
+                if (self.owner != null)
+                {
+                 
+                    CharacterBody body = self.owner.GetComponent<CharacterBody>();
+                    if (body != null && body.bodyIndex == BodyCatalog.FindBodyIndex("FalseSonBody"))
+                    {
+                       
+                        EntityStateMachine stateMachine = EntityStateMachine.FindByCustomName(self.owner, "Weapon");
+                        if (stateMachine != null && stateMachine.state is EntityStates.FalseSon.LaserFatherCharged)
+                        {
+                     
+                            self.falloffModel = BulletAttack.FalloffModel.None;
+
+                        }
+                    }
+                }
+               
+                orig(self);
             };
 
             On.EntityStates.FalseSon.LaserFatherCharged.OnEnter += (orig, self) =>
@@ -73,7 +94,6 @@ namespace FalseSonTweak
                
             };
 
-           
         }
     }
 }
