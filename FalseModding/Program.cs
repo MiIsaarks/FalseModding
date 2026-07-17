@@ -7,6 +7,7 @@ using RoR2.Projectile;
 using RoR2.Skills;
 using UnityEngine.AddressableAssets;
 using System;
+using R2API.Utils;
 
 
 namespace FalseSonTweak
@@ -17,6 +18,12 @@ namespace FalseSonTweak
         private static float? originalDamage = null;
         public void Awake()
         {
+            On.EntityStates.FalseSon.LaserFather.OnEnter += (orig, self) =>
+            {
+                self.baseChargeDuration = 0.5f;
+                orig(self);
+            };
+
             SkillDef FalseSonLaserF = Addressables.LoadAssetAsync<SkillDef>("RoR2/DLC2/FalseSon/FalseSonBodyLaser.asset").WaitForCompletion();
 
             FalseSonLaserF.baseRechargeInterval = 10f;
@@ -40,14 +47,14 @@ namespace FalseSonTweak
                     
                 float num = skillLocator.GetSkill(SkillSlot.Secondary).maxStock;
                 float num2 = skillLocator.GetSkill(SkillSlot.Secondary).stock;
-                int num3 = (int)(num * 0.5f);
+                int num3 = (int)(num * 0.6f);
                 self.skillLocator.GetSkill(SkillSlot.Secondary).stock = (int)Mathf.Clamp(num2 + (float)num3, num2, num);
             }
 
 
             if (originalDamage == null) 
                 {
-                    originalDamage = EntityStates.FalseSon.LaserFatherCharged.damageCoefficient;
+                    originalDamage = EntityStates.FalseSon.LaserFatherCharged.damageCoefficient*1.5f;
                 }
            
                 var growthController = self.characterBody.GetComponent<RoR2.FalseSonController>();
@@ -56,7 +63,7 @@ namespace FalseSonTweak
                     int currentGrowth = growthController.growthLevel;
 
                    
-                    float damageMultiplier = 1f + (currentGrowth * 0.05f);
+                    float damageMultiplier = 1f + (currentGrowth * 0.07f);
 
                     
                     EntityStates.FalseSon.LaserFatherCharged.damageCoefficient =originalDamage.Value * damageMultiplier;
