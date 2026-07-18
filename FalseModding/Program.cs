@@ -1,13 +1,15 @@
 ﻿using BepInEx;
-using RoR2;
 using EntityStates;
 using EntityStates.FalseSon;
-using UnityEngine;
+using R2API.Utils;
+using RoR2;
 using RoR2.Projectile;
 using RoR2.Skills;
+using System.ComponentModel;
+using UnityEngine;
 using UnityEngine.AddressableAssets;
-using System;
-using R2API.Utils;
+using UnityEngine.Networking;
+using UnityEngine.UIElements;
 
 namespace FalseSonTweak
 {
@@ -17,6 +19,21 @@ namespace FalseSonTweak
         private static float? originalDamage = null;
         public void Awake()
         {
+            GameObject Lightning = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC2/FalseSon/LunarStakeLightningStrikeImpactEffect.prefab").WaitForCompletion();
+
+            On.RoR2.BulletAttack.InitBulletHitFromRaycastHit += (orig, self, ref bullethit, ray, ref raycasthit) =>
+            {
+               
+
+                orig(self, ref bullethit, ray, ref raycasthit);
+
+                if (BulletAttack.IgnoreAlliesFilter(self, ref bullethit))
+                {
+                    GameObject obj = GameObject.Instantiate(Lightning, bullethit.entityObject.transform.position, raycasthit.transform.rotation);
+                    NetworkServer.Spawn(obj);
+                }
+            };
+
             On.EntityStates.FalseSon.LaserFather.OnEnter += (orig, self) =>
             {
                 self.baseChargeDuration = 0.5f;
