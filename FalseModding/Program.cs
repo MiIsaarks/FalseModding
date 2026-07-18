@@ -30,6 +30,7 @@ namespace FalseSonTweak
                 if (BulletAttack.IgnoreAlliesFilter(self, ref bullethit))
                 {
                     GameObject obj = GameObject.Instantiate(Lightning, bullethit.entityObject.transform.position, raycasthit.transform.rotation);
+                   
                     NetworkServer.Spawn(obj);
                 }
             };
