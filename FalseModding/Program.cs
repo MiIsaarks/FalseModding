@@ -1,38 +1,65 @@
 ﻿using BepInEx;
-using EntityStates;
-using EntityStates.FalseSon;
-using R2API.Utils;
 using RoR2;
-using RoR2.Projectile;
 using RoR2.Skills;
-using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.Networking;
-using UnityEngine.UIElements;
+using R2API; 
+    
 
 namespace FalseSonTweak
 {
     [BepInPlugin("com.YourName.FalseSonDamageScaling", "FalseSonDamageScaling", "1.0.0")]
     public class MainPlugin : BaseUnityPlugin
     {
+        private static int hitsToLightning = 10;
+        private static int hitcount = 0;
         private static float? originalDamage = null;
+
+        private static bool light = false;
         public void Awake()
         {
             GameObject Lightning = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC2/FalseSon/LunarStakeLightningStrikeImpactEffect.prefab").WaitForCompletion();
 
-            On.RoR2.BulletAttack.InitBulletHitFromRaycastHit += (orig, self, ref bullethit, ray, ref raycasthit) =>
+            On.EntityStates.FalseSon.LaserFatherCharged.FireBullet += (orig, self, a, b, c, d) =>
             {
-               
+                light = true;
+                orig(self, a, b, c, d);
+                light = false;
+            };
 
-                orig(self, ref bullethit, ray, ref raycasthit);
+            On.RoR2.BulletAttack.DefaultHitCallbackImplementation += (orig, self,ref bullethit) =>
+            {
+    
+             bool b =   orig(self, ref bullethit);
+              
 
-                if (BulletAttack.IgnoreAlliesFilter(self, ref bullethit))
+                if (!light)
                 {
-                    GameObject obj = GameObject.Instantiate(Lightning, bullethit.entityObject.transform.position, raycasthit.transform.rotation);
-                   
-                    NetworkServer.Spawn(obj);
+                    return b;
                 }
+                if (bullethit.entityObject.GetComponent<HealthComponent>() != null)
+                {
+                    hitcount++;
+                    if (hitcount % hitsToLightning == 0)
+                    {
+                        GameObject obj = GameObject.Instantiate(Lightning, bullethit.entityObject.transform.position, Quaternion.identity);
+
+                        bullethit.entityObject.GetComponent<HealthComponent>().TakeDamage(new DamageInfo
+                        {
+                            damage = self.damage * 3,
+                            position = bullethit.point,
+                            force = Vector3.zero,
+                            attacker = self.owner,
+                            inflictor = obj,
+                            crit = self.isCrit,
+                            damageColorIndex = DamageColorIndex.Default,
+                            damageType = DamageType.Generic,
+                            procCoefficient = 1f
+                        });
+
+                    }
+                }
+                return b;
             };
 
             On.EntityStates.FalseSon.LaserFather.OnEnter += (orig, self) =>
@@ -42,6 +69,10 @@ namespace FalseSonTweak
             };
 
             SkillDef FalseSonLaserF = Addressables.LoadAssetAsync<SkillDef>("RoR2/DLC2/FalseSon/FalseSonBodyLaser.asset").WaitForCompletion();
+
+            LanguageAPI.Add("FalseSonLaserDescriptionNew", "My laser is goated and peak");
+
+            FalseSonLaserF.skillDescriptionToken = "FalseSonLaserDescriptionNew";
 
             FalseSonLaserF.baseRechargeInterval = 10f;
 
@@ -75,6 +106,8 @@ namespace FalseSonTweak
             On.EntityStates.FalseSon.LaserFatherCharged.OnEnter += (orig, self) =>
             {
                 orig(self);
+
+                hitcount = 1;
 
                 EntityStates.FalseSon.LaserFatherCharged.procCoefficientPerTick = 0.7f;
 
