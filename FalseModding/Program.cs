@@ -46,7 +46,7 @@ namespace FalseSonTweak
 
                         bullethit.entityObject.GetComponent<HealthComponent>().TakeDamage(new DamageInfo
                         {
-                            damage = self.damage * 3,
+                            damage = self.damage * 5,
                             position = bullethit.point,
                             force = Vector3.zero,
                             attacker = self.owner,
@@ -70,7 +70,7 @@ namespace FalseSonTweak
 
             SkillDef FalseSonLaserF = Addressables.LoadAssetAsync<SkillDef>("RoR2/DLC2/FalseSon/FalseSonBodyLaser.asset").WaitForCompletion();
 
-            LanguageAPI.Add("FalseSonLaserDescriptionNew", "My laser is goated and peak");
+            LanguageAPI.Add("FalseSonLaserDescriptionNew", "Charge a rapidly hitting laser dealing 360%-2100% damage for 4s and refill Lunar Spikes. Increases in damage through Growth. Summons lightning");
 
             FalseSonLaserF.skillDescriptionToken = "FalseSonLaserDescriptionNew";
 
@@ -106,6 +106,8 @@ namespace FalseSonTweak
             On.EntityStates.FalseSon.LaserFatherCharged.OnEnter += (orig, self) =>
             {
                 orig(self);
+                float recalc = (self.characterBody.attackSpeed - self.characterBody.baseAttackSpeed)*0.3f;
+                self.fireFrequency = EntityStates.FalseSon.LaserFatherCharged.baseFireFrequency * (1 + recalc);
 
                 hitcount = 1;
 
@@ -119,7 +121,7 @@ namespace FalseSonTweak
                     
                 float num = skillLocator.GetSkill(SkillSlot.Secondary).maxStock;
                 float num2 = skillLocator.GetSkill(SkillSlot.Secondary).stock;
-                int num3 = (int)(num * 0.6f);
+                int num3 = (int)(num * 0.7f);
                 self.skillLocator.GetSkill(SkillSlot.Secondary).stock = (int)Mathf.Clamp(num2 + (float)num3, num2, num);
             }
 
