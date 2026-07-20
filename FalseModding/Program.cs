@@ -3,8 +3,9 @@ using RoR2;
 using RoR2.Skills;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using R2API; 
-    
+using R2API;
+using FalseModding;
+
 
 namespace FalseSonTweak
 {
@@ -18,6 +19,7 @@ namespace FalseSonTweak
         private static bool light = false;
         public void Awake()
         {
+            FlameThrowerTweak.init();
             GameObject Lightning = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC2/FalseSon/LunarStakeLightningStrikeImpactEffect.prefab").WaitForCompletion();
 
             On.EntityStates.FalseSon.LaserFatherCharged.FireBullet += (orig, self, a, b, c, d) =>
