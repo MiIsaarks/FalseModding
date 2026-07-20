@@ -70,9 +70,22 @@ namespace FalseSonTweak
 
             SkillDef FalseSonLaserF = Addressables.LoadAssetAsync<SkillDef>("RoR2/DLC2/FalseSon/FalseSonBodyLaser.asset").WaitForCompletion();
 
-            LanguageAPI.Add("FalseSonLaserDescriptionNew", "Charge a rapidly hitting laser dealing 360%-2100% damage for 4s and refill Lunar Spikes. Increases in damage through Growth. Summons lightning");
+            LanguageAPI.Add("FalseSonLaserDescriptionNew",
+                "Charge a rapidly hitting laser dealing <style=cIsDamage>360%-2100% damage</style> for <style=cIsUtility>4s</style> and refill <style=cIsUtility>Lunar Spikes</style>. " +
+                "Increases in damage through <style=cIsHealing>Growth</style>. Summons <style=cIsDamage>Lightning</style> on repeated hits.");
 
             FalseSonLaserF.skillDescriptionToken = "FalseSonLaserDescriptionNew";
+
+           
+            LanguageAPI.Add("KEYWORD_LASER_LIGHTNING",
+                "<style=cKeywordName>Brother's Lightning</style><style=cSub>\nEvery <style=cIsUtility>10 hits</style> with the laser, call down a lightning strike dealing <style=cIsDamage>500% </style>of the laser's damage.</style>");
+
+           
+            FalseSonLaserF.keywordTokens = new string[]
+            {
+                "KEYWORD_GROWTH",
+                "KEYWORD_LASER_LIGHTNING"
+            };
 
             FalseSonLaserF.baseRechargeInterval = 10f;
 
