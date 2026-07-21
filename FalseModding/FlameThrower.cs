@@ -11,12 +11,21 @@ namespace FalseModding
     public static class FlameThrowerTweak
     {
         private static float newRange = 45f;
+        private static float jumpDuration = 0.5f;
+        private static float baseSpeedMultiplier = 5f;
+        private static float gravityDelay = 0.5f;
+
+        private static readonly AnimationCurve speedCurve = new AnimationCurve(
+             new Keyframe(0f, 1f),   
+             new Keyframe(0.7f, 0.5f), 
+             new Keyframe(1f, 0f)      
+         );
         public static void init()
-        {
+        { 
 
         SkillDef FlameThrowerr = Addressables.LoadAssetAsync<SkillDef>("RoR2/Base/Mage/MageBodyFlamethrower.asset").WaitForCompletion();
 
-            LanguageAPI.Add("MageFlamethrowerNewDesc", "<style=cIsdamage>Ignite</style>. Burn all enemies in front of you for <style=cIsdamage>4000% damage</style>.");
+            LanguageAPI.Add("MageFlamethrowerNewDesc", "<style=cIsdamage>Ignite</style>. Burn all enemies in front of you for <style=cIsdamage>6000% damage</style>.");
             FlameThrowerr.skillDescriptionToken = "MageFlamethrowerNewDesc";
 
 
@@ -28,9 +37,9 @@ namespace FalseModding
             On.EntityStates.Mage.Weapon.Flamethrower.OnEnter += (orig, self) =>
             {
                 orig(self);
-                self.entryDuration = 0;
+                self.entryDuration = 0.2f;
 
-                self.tickDamageCoefficient *= 2f;
+                self.tickDamageCoefficient *= 3f;
 
                 EntityStates.Mage.Weapon.Flamethrower.ignitePercentChance = 100f;
 
@@ -38,9 +47,45 @@ namespace FalseModding
 
                 float scaleRatio = newRange / 16f;
 
+                if(self.characterMotor != null)
+                {
+                    self.characterMotor.Motor.ForceUnground(jumpDuration);
+
+                    self.characterMotor.velocity.y = 0f;
+
+                }
+
                 ScaleFlamethrowerVisual(self.leftFlamethrowerEffectInstance, scaleRatio);
                 ScaleFlamethrowerVisual(self.rightFlamethrowerEffectInstance, scaleRatio);
 
+            };
+
+            On.EntityStates.Mage.Weapon.Flamethrower.FixedUpdate += (orig, self) =>
+            {
+                orig(self);
+
+             
+                if (self.fixedAge <= jumpDuration && self.characterMotor != null && self.characterBody != null)
+                {
+                   
+                    float normalizedTime = self.fixedAge / jumpDuration;
+
+                   
+                    float curveValue = speedCurve.Evaluate(normalizedTime);
+
+                   
+                    float currentSpeed = self.characterBody.moveSpeed * baseSpeedMultiplier * curveValue;
+
+                  
+                    self.characterMotor.rootMotion += Vector3.up * (currentSpeed * Time.fixedDeltaTime);
+
+                   
+                    self.characterMotor.velocity.y = 0f;
+                }
+                else if(self.fixedAge <= gravityDelay + jumpDuration)
+                {
+                    self.characterMotor.velocity.y = Mathf.Max(self.characterMotor.velocity.y, 0f);
+                }
             };
         }
 
@@ -55,7 +100,6 @@ namespace FalseModding
             {
                 string psName = ps.gameObject.name;
 
-                // 1. SKIP the hand orb/charge effect entirely
                 if (psName == "IcoCharge")
                 {
                     continue;
@@ -63,13 +107,11 @@ namespace FalseModding
 
                 var main = ps.main;
 
-                // 2. Extend the travel distance/speed of the flame particles
                 main.startSpeedMultiplier *= scaleRatio;
 
-                // 3. Scale up the particle size for the actual flame stream
                 if (psName == "FireForward" || psName == "Billboard")
                 {
-                    main.startSizeMultiplier *= 1.5f; // Adjust this multiplier until thickness looks right
+                    main.startSizeMultiplier *= 1.5f; 
                 }
             }
 
