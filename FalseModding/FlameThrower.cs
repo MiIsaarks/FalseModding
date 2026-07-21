@@ -12,7 +12,7 @@ namespace FalseModding
     {
         private static float newRange = 45f;
         private static float jumpDuration = 0.5f;
-        private static float baseSpeedMultiplier = 5f;
+        private static float baseSpeedMultiplier = 3.5f;
         private static float gravityDelay = 0.5f;
 
         private static readonly AnimationCurve speedCurve = new AnimationCurve(
@@ -25,7 +25,7 @@ namespace FalseModding
 
         SkillDef FlameThrowerr = Addressables.LoadAssetAsync<SkillDef>("RoR2/Base/Mage/MageBodyFlamethrower.asset").WaitForCompletion();
 
-            LanguageAPI.Add("MageFlamethrowerNewDesc", "<style=cIsdamage>Ignite</style>. Burn all enemies in front of you for <style=cIsdamage>6000% damage</style>.");
+            LanguageAPI.Add("MageFlamethrowerNewDesc", "<style=cIsdamage>Ignite</style>. Burn all enemies in front of you for <style=cIsdamage>5000% damage</style>.");
             FlameThrowerr.skillDescriptionToken = "MageFlamethrowerNewDesc";
 
 
@@ -37,9 +37,9 @@ namespace FalseModding
             On.EntityStates.Mage.Weapon.Flamethrower.OnEnter += (orig, self) =>
             {
                 orig(self);
-                self.entryDuration = 0.2f;
+                self.entryDuration = 0.3f;
 
-                self.tickDamageCoefficient *= 3f;
+                self.tickDamageCoefficient *= 2.5f;
 
                 EntityStates.Mage.Weapon.Flamethrower.ignitePercentChance = 100f;
 
