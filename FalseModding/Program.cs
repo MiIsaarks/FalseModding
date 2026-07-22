@@ -20,6 +20,7 @@ namespace FalseSonTweak
         public void Awake()
         {
             FlameThrowerTweak.init();
+            ArrowRainTweak.init();
             GameObject Lightning = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC2/FalseSon/LunarStakeLightningStrikeImpactEffect.prefab").WaitForCompletion();
 
             On.EntityStates.FalseSon.LaserFatherCharged.FireBullet += (orig, self, a, b, c, d) =>
