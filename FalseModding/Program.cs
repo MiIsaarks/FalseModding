@@ -48,14 +48,14 @@ namespace FalseSonTweak
 
                         bullethit.entityObject.GetComponent<HealthComponent>().TakeDamage(new DamageInfo
                         {
-                            damage = self.damage * 5,
+                            damage = self.damage * 3.0f,
                             position = bullethit.point,
                             force = Vector3.zero,
                             attacker = self.owner,
                             inflictor = obj,
                             crit = self.isCrit,
                             damageColorIndex = DamageColorIndex.Default,
-                            damageType = DamageType.Generic,
+                            damageType = DamageTypeExtended.Electrical,
                             procCoefficient = 1f
                         });
 
@@ -80,7 +80,7 @@ namespace FalseSonTweak
 
            
             LanguageAPI.Add("KEYWORD_LASER_LIGHTNING",
-                "<style=cKeywordName>Brother's Lightning</style><style=cSub>\nEvery <style=cIsUtility>10 hits</style> with the laser, call down a lightning strike dealing <style=cIsDamage>500% </style>of the laser's damage.</style>");
+                "<style=cKeywordName>Brother's Lightning</style><style=cSub>\nEvery <style=cIsUtility>10 hits</style> with the laser, call down a lightning strike dealing <style=cIsDamage>325% </style>of the laser's damage.</style>");
 
            
             FalseSonLaserF.keywordTokens = new string[]
@@ -136,7 +136,7 @@ namespace FalseSonTweak
                     
                 float num = skillLocator.GetSkill(SkillSlot.Secondary).maxStock;
                 float num2 = skillLocator.GetSkill(SkillSlot.Secondary).stock;
-                int num3 = (int)(num * 0.7f);
+                int num3 = (int)(num * 0.5f);
                 self.skillLocator.GetSkill(SkillSlot.Secondary).stock = (int)Mathf.Clamp(num2 + (float)num3, num2, num);
             }
 
@@ -152,7 +152,7 @@ namespace FalseSonTweak
                     int currentGrowth = growthController.growthLevel;
 
                    
-                    float damageMultiplier = 1f + (currentGrowth * 0.07f);
+                    float damageMultiplier = 1f + (currentGrowth * 0.05f);
 
                     
                     EntityStates.FalseSon.LaserFatherCharged.damageCoefficient =originalDamage.Value * damageMultiplier;
