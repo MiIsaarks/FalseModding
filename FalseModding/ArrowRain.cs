@@ -11,7 +11,7 @@ namespace FalseModding
     {
         public static void init()
         {
-            float newRadius = 15f;
+            float newRadius = 13f;
 
             SkillDef HuntressRain = Addressables.LoadAssetAsync<SkillDef>("RoR2/Base/Huntress/HuntressBodyArrowRain.asset").WaitForCompletion();
 
@@ -19,7 +19,7 @@ namespace FalseModding
 
             HuntressBlink.baseRechargeInterval = 4.5f;
 
-            HuntressRain.baseRechargeInterval = 10f;
+            HuntressRain.baseRechargeInterval = 11f;
 
             LanguageAPI.Add("HuntressArrowRainDescription",
                 "<style=cIsUtility>Teleport</style> into the sky. Target an area to rain arrows, <style=cIsUtility>slowing</style> all enemies and dealing <style=cIsDamage>660% damage</style> per second.");
@@ -33,7 +33,9 @@ namespace FalseModding
 
                 EntityStates.Huntress.ArrowRain.projectilePrefab.GetComponent<ProjectileDotZone>().lifetime = 7f;
 
-                EntityStates.Huntress.ArrowRain.projectilePrefab.GetComponent<ProjectileDotZone>().resetFrequency = 4.0f;
+                float recalc = (self.characterBody.attackSpeed - self.characterBody.baseAttackSpeed) * 0.3f;
+
+                EntityStates.Huntress.ArrowRain.projectilePrefab.GetComponent<ProjectileDotZone>().resetFrequency = 4f*(1+recalc);
 
                 EntityStates.Huntress.ArrowRain.projectilePrefab.GetComponent<ProjectileDotZone>().transform.localScale = new Vector3(newRadius, 150, newRadius)*2f;
 
