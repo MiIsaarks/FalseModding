@@ -4,12 +4,13 @@ using RoR2.Skills;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using R2API;
-using FalseModding;
 
 
-namespace FalseSonTweak
+
+namespace ForgottenSkillsTweaks
 {
-    [BepInPlugin("com.YourName.FalseSonDamageScaling", "FalseSonDamageScaling", "1.0.0")]
+    [BepInPlugin("com.MiIsaarks.ForgottenSkillsTweaks", "ForgottenSkillsTweaks", "0.1.1")]
+    [BepInDependency(R2API.LanguageAPI.PluginGUID)]
     public class MainPlugin : BaseUnityPlugin
     {
         private static int hitsToLightning = 10;
@@ -21,6 +22,7 @@ namespace FalseSonTweak
         {
             FlameThrowerTweak.init();
             ArrowRainTweak.init();
+            BlightTweak.init();
             GameObject Lightning = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC2/FalseSon/LunarStakeLightningStrikeImpactEffect.prefab").WaitForCompletion();
 
             On.EntityStates.FalseSon.LaserFatherCharged.FireBullet += (orig, self, a, b, c, d) =>
@@ -74,14 +76,14 @@ namespace FalseSonTweak
             SkillDef FalseSonLaserF = Addressables.LoadAssetAsync<SkillDef>("RoR2/DLC2/FalseSon/FalseSonBodyLaser.asset").WaitForCompletion();
 
             LanguageAPI.Add("FalseSonLaserDescriptionNew",
-                "Charge a rapidly hitting laser dealing <style=cIsDamage>360%-2100% damage</style> for <style=cIsUtility>4s</style> and refill <style=cIsUtility>Lunar Spikes</style>. " +
+                "Charge a rapidly hitting laser dealing <style=cIsDamage>320%-1890% damage</style> for <style=cIsUtility>4s</style> and refill <style=cIsUtility>Lunar Spikes</style>. " +
                 "Increases in damage through <style=cIsHealing>Growth</style>. Summons <style=cIsDamage>Lightning</style> on repeated hits.");
 
             FalseSonLaserF.skillDescriptionToken = "FalseSonLaserDescriptionNew";
 
            
             LanguageAPI.Add("KEYWORD_LASER_LIGHTNING",
-                "<style=cKeywordName>Brother's Lightning</style><style=cSub>\nEvery <style=cIsUtility>10 hits</style> with the laser, call down a lightning strike dealing <style=cIsDamage>325% </style>of the laser's damage.</style>");
+                "<style=cKeywordName>Brother's Lightning</style><style=cSub>\nEvery <style=cIsUtility>10 hits</style> with the laser, call down a lightning strike dealing <style=cIsDamage>300% </style>of the laser's damage.</style>");
 
            
             FalseSonLaserF.keywordTokens = new string[]
@@ -144,7 +146,7 @@ namespace FalseSonTweak
 
             if (originalDamage == null) 
                 {
-                    originalDamage = EntityStates.FalseSon.LaserFatherCharged.damageCoefficient*1.5f;
+                    originalDamage = EntityStates.FalseSon.LaserFatherCharged.damageCoefficient*1.35f;
                 }
            
                 var growthController = self.characterBody.GetComponent<RoR2.FalseSonController>();

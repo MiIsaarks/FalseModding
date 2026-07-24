@@ -5,7 +5,7 @@ using RoR2.Skills;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-namespace FalseModding
+namespace ForgottenSkillsTweaks
 {
     public static class ArrowRainTweak
     {
@@ -33,7 +33,7 @@ namespace FalseModding
 
                 EntityStates.Huntress.ArrowRain.projectilePrefab.GetComponent<ProjectileDotZone>().lifetime = 7f;
 
-                float recalc = (self.characterBody.attackSpeed - self.characterBody.baseAttackSpeed) * 0.3f;
+                float recalc = (self.characterBody.attackSpeed - self.characterBody.baseAttackSpeed) * 0.5f;
 
                 EntityStates.Huntress.ArrowRain.projectilePrefab.GetComponent<ProjectileDotZone>().resetFrequency = 4f*(1+recalc);
 
