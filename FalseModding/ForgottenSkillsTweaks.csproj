@@ -21,6 +21,8 @@
 
 		<PackageReference Include="BepInEx.Core" Version="5.4.21" />
 
+		<PackageReference Include="R2API.Dot" Version="1.1.2" />
+
 		
 		<PackageReference Include="R2API.Language" Version="1.1.0" />
 

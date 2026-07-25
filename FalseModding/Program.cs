@@ -7,10 +7,12 @@ using R2API;
 
 
 
+
 namespace ForgottenSkillsTweaks
 {
-    [BepInPlugin("com.MiIsaarks.ForgottenSkillsTweaks", "ForgottenSkillsTweaks", "0.1.1")]
+    [BepInPlugin("com.MiIsaarks.ForgottenSkillsTweaks", "ForgottenSkillsTweaks", "0.2.0")]
     [BepInDependency(R2API.LanguageAPI.PluginGUID)]
+    [BepInDependency(R2API.DotAPI.PluginGUID)]
     public class MainPlugin : BaseUnityPlugin
     {
         private static int hitsToLightning = 10;
