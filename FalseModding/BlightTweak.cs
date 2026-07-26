@@ -17,11 +17,12 @@ namespace ForgottenSkillsTweaks
         {
            
 
-            SkillDef Blightdef = Addressables.LoadAssetAsync<SkillDef>("RoR2/Base/Croco/bdBlight.asset").WaitForCompletion();
+            SkillDef Blightdef = Addressables.LoadAssetAsync<SkillDef>("RoR2/Base/Croco/CrocoPassiveBlight.asset").WaitForCompletion();
 
             LanguageAPI.Add("NewBlightDesc", "Attacks that apply Poison apply stacking <style=cIsdamage>Blight</style> instead, dealing <style=cIsdamage>90% damage</style> per second. New stacks extends all stacks durations. Can activate items");
 
             Blightdef.skillDescriptionToken = "NewBlightDesc";
+
             On.RoR2.DotController.InflictDot_refInflictDotInfo += DotController_InflictDot_refInflictDotInfo;
 
             On.RoR2.HealthComponent.TakeDamage += HealthComponent_TakeDamage;
