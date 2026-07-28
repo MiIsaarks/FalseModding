@@ -49,7 +49,7 @@ namespace ForgottenSkillsTweaks
                     self.damageCoefficient += consecutiveWeakSpotHit;
                 }
 
-                if(self is FireSnipeHeavy)
+                if(self is FireSnipeSuper)
                 {
                     self.damageCoefficient += consecutiveWeakSpotHit;
                 }

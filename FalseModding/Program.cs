@@ -10,7 +10,7 @@ using R2API;
 
 namespace ForgottenSkillsTweaks
 {
-    [BepInPlugin("com.MiIsaarks.ForgottenSkillsTweaks", "ForgottenSkillsTweaks", "0.3.0")]
+    [BepInPlugin("com.MiIsaarks.ForgottenSkillsTweaks", "ForgottenSkillsTweaks", "0.3.1")]
     [BepInDependency(R2API.LanguageAPI.PluginGUID)]
     [BepInDependency(R2API.DotAPI.PluginGUID)]
     public class MainPlugin : BaseUnityPlugin
@@ -52,19 +52,21 @@ namespace ForgottenSkillsTweaks
                     {
                         GameObject obj = GameObject.Instantiate(Lightning, bullethit.entityObject.transform.position, Quaternion.identity);
 
-                        bullethit.entityObject.GetComponent<HealthComponent>().TakeDamage(new DamageInfo
+                        BlastAttack blastAttack = new BlastAttack
                         {
-                            damage = self.damage * 3.0f,
-                            position = bullethit.point,
-                            force = Vector3.zero,
                             attacker = self.owner,
+                            position = bullethit.point,
                             inflictor = obj,
+                            baseDamage = self.damage * 3.5f,
                             crit = self.isCrit,
                             damageColorIndex = DamageColorIndex.Default,
                             damageType = DamageTypeExtended.Electrical,
-                            procCoefficient = 1f
-                        });
-
+                            radius = 6f,
+                            procCoefficient = 1f,
+                            falloffModel = BlastAttack.FalloffModel.None,
+                            teamIndex = TeamComponent.GetObjectTeam(self.owner)
+                        };
+                        blastAttack.Fire();
                     }
                 }
                 return b;
@@ -86,7 +88,7 @@ namespace ForgottenSkillsTweaks
 
            
             LanguageAPI.Add("KEYWORD_LASER_LIGHTNING",
-                "<style=cKeywordName>Brother's Lightning</style><style=cSub>\nEvery <style=cIsUtility>10 hits</style> with the laser, call down a lightning strike dealing <style=cIsDamage>300% </style>of the laser's damage.</style>");
+                "<style=cKeywordName>Brother's Lightning</style><style=cSub>\nEvery <style=cIsUtility>10 hits</style> with the laser, call down a lightning strike dealing <style=cIsDamage>350% </style>of the laser's damage.</style>");
 
            
             FalseSonLaserF.keywordTokens = new string[]

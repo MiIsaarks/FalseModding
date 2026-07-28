@@ -33,7 +33,7 @@ namespace ForgottenSkillsTweaks
             if(damageInfo.dotIndex == DotController.DotIndex.Blight && damageInfo.inflictor.GetComponent<DotController>() != null)
             {
                
-                damageInfo.procCoefficient = 0.4f;
+                damageInfo.procCoefficient = 0.5f;
                
                 damageInfo.procChainMask = default;
 
