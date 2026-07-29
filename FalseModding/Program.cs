@@ -26,6 +26,7 @@ namespace ForgottenSkillsTweaks
             ArrowRainTweak.init();
             BlightTweak.init();
             RailGunner.init();
+            Bandit.init();
             GameObject Lightning = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC2/FalseSon/LunarStakeLightningStrikeImpactEffect.prefab").WaitForCompletion();
 
             On.EntityStates.FalseSon.LaserFatherCharged.FireBullet += (orig, self, a, b, c, d) =>
