@@ -10,7 +10,8 @@ namespace ForgottenSkillsTweaks
     
     public static class Bandit
     {
-        private static SkillLocator skillLocator = null;
+       
+       
         private static bool IsRevolver = false;
         public static void init()
         {
@@ -22,49 +23,68 @@ namespace ForgottenSkillsTweaks
                 if (self is FireSidearmResetRevolver)
                 {
                     IsRevolver = true;
-                   
-                    skillLocator = self.characterBody.skillLocator;
+
+                }
+                else
+                {
+                    IsRevolver = false;
                 }
                 orig(self);
              
             };
 
+            On.EntityStates.Bandit2.Weapon.Bandit2FireRifle.ModifyBullet += (orig, self, bulletAttack) =>
+            {
+               
+                self.minSpread = 0f;
+                self.maxSpread = 0.2f;
+                self.spreadBloomValue = 0.2f;
+                self.damageCoefficient = 3.8f;
+                orig(self, bulletAttack);
+            }; 
+
         }
-
-
-        
 
         private static void ServerDamageDealt(DamageReport damageReport)
         {
+           
             DamageInfo damageinfo = damageReport.damageInfo;
-
-            if (damageinfo.crit && IsRevolver)
+           
+            
+            if (damageinfo.crit && IsRevolver && damageinfo.damageType.damageSource == DamageSource.Special)
             {
-                skillLocator.GetSkill(SkillSlot.Primary).Reset();
-                skillLocator.GetSkill(SkillSlot.Secondary).Reset();
-                skillLocator.GetSkill(SkillSlot.Utility).Reset();
-                
+                CharacterBody body = damageReport.attackerBody;
+                if(body && body.skillLocator)
+                {
+                   SkillLocator skillLocator = body.skillLocator;
 
+                    skillLocator.GetSkill(SkillSlot.Primary).Reset();
+                    skillLocator.GetSkill(SkillSlot.Secondary).Reset();
+                    skillLocator.GetSkill(SkillSlot.Utility).Reset();
+                } 
+               
             }
         }
 
         private static void HealthComponent_TakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo damageInfo)
         {
-           
-                if (self.body && self.body.HasBuff(RoR2Content.Buffs.SuperBleed))
+            CharacterBody body = damageInfo.attacker.GetComponent<CharacterBody>();
+            
+            if (self.body && self.body.HasBuff(RoR2Content.Buffs.SuperBleed))
+            {
+                if (IsRevolver && damageInfo.damageType.damageSource == DamageSource.Special)
                 {
-                    if (IsRevolver)
-                    {
-                        damageInfo.damage *= 2.5f;
-                    IsRevolver = false;
-                    }
+                    damageInfo.damage *= 3f;
+                  
+                   if (body)
+                   {
+                       body.AddTimedBuff(RoR2Content.Buffs.FullCrit, 2f);
+                   }
                 }
+            }
 
-                orig(self, damageInfo);
+            orig(self, damageInfo);
 
-                GlobalEventManager.instance.OnHitEnemy(damageInfo, self.gameObject);
-                GlobalEventManager.instance.OnHitAll(damageInfo, self.gameObject);
-          
         }
        
     
