@@ -89,7 +89,7 @@ namespace ForgottenSkillsTweaks
 
            
             LanguageAPI.Add("KEYWORD_LASER_LIGHTNING",
-                "<style=cKeywordName>Brother's Lightning</style><style=cSub>\nEvery <style=cIsUtility>10 hits</style> with the laser, call down a lightning strike dealing <style=cIsDamage>350% </style>of the laser's damage.</style>");
+                "<style=cKeywordName>Brother's Lightning</style><style=cSub>Every <style=cIsUtility>10 hits</style> with the laser, call down a lightning strike dealing <style=cIsDamage>350% </style>of the laser's damage.</style>");
 
            
             FalseSonLaserF.keywordTokens = new string[]

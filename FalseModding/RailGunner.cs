@@ -25,7 +25,7 @@ namespace ForgottenSkillsTweaks
 
             HH44.skillDescriptionToken = "HH44NewDescription";
 
-            LanguageAPI.Add("KEYWORD_CONSECUTIVE", "<style=cKeywordName>Sniper's Flow</style><style=cSub>\nConsecutive <style=cIsDamage>Weak Point</style> hits boost the damage of your next shot by <style=cIsdamage>100%</style> per consecutive hit up to 10 times.</style>");
+            LanguageAPI.Add("KEYWORD_CONSECUTIVE", "<style=cKeywordName>Sniper's Flow</style><style=cSub>Consecutive <style=cIsDamage>Weak Point</style> hits boost the damage of your next shot by <style=cIsdamage>100%</style> per consecutive hit up to 10 times.</style>");
 
 
             HH44.keywordTokens = new string[]
