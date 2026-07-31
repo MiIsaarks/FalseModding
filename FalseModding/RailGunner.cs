@@ -17,7 +17,7 @@ namespace ForgottenSkillsTweaks
 
             SkillDef HH44 = Addressables.LoadAssetAsync<SkillDef>("RoR2/DLC1/Railgunner/RailgunnerBodyScopeLight.asset").WaitForCompletion();
 
-            SlowMine.baseRechargeInterval = 7f;
+            SlowMine.baseRechargeInterval = 8f;
             SlowMine.baseMaxStock = 2;
 
             LanguageAPI.Add("HH44NewDescription",

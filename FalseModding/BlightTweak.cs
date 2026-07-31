@@ -19,7 +19,7 @@ namespace ForgottenSkillsTweaks
 
             SkillDef Blightdef = Addressables.LoadAssetAsync<SkillDef>("RoR2/Base/Croco/CrocoPassiveBlight.asset").WaitForCompletion();
 
-            LanguageAPI.Add("NewBlightDesc", "Attacks that apply Poison apply stacking <style=cIsdamage>Blight</style> instead, dealing <style=cIsdamage>90% damage</style> per second. New stacks extends all stacks durations. Can activate items");
+            LanguageAPI.Add("NewBlightDesc", "Attacks that apply Poison apply stacking <style=cIsdamage>Blight</style> instead, dealing <style=cIsdamage>100% damage</style> per second. New stacks extends all stacks durations. Can activate items");
 
             Blightdef.skillDescriptionToken = "NewBlightDesc";
 
@@ -33,7 +33,7 @@ namespace ForgottenSkillsTweaks
             if(damageInfo.dotIndex == DotController.DotIndex.Blight && damageInfo.inflictor.GetComponent<DotController>() != null)
             {
                
-                damageInfo.procCoefficient = 0.5f;
+                damageInfo.procCoefficient = 0.65f;
                
                 damageInfo.procChainMask = default;
 
@@ -63,7 +63,7 @@ namespace ForgottenSkillsTweaks
             if (inflictDotInfo.dotIndex == DotController.DotIndex.Blight)
             {
 
-                inflictDotInfo.damageMultiplier += 0.5f;
+                inflictDotInfo.damageMultiplier += 0.67f;
                 inflictDotInfo.duration = 6f;
 
 
@@ -76,7 +76,7 @@ namespace ForgottenSkillsTweaks
                         {
                             if (stack.dotIndex == DotController.DotIndex.Blight)
                             {
-                                stack.timer += 1.5f;
+                                stack.timer += 2f;
                             }
 
                         }

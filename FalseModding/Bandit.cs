@@ -17,13 +17,15 @@ namespace ForgottenSkillsTweaks
         {
             SkillDef revolver = Addressables.LoadAssetAsync<SkillDef>("RoR2/Base/Bandit2/ResetRevolver.asset").WaitForCompletion();
 
+            SkillDef Blade = Addressables.LoadAssetAsync<SkillDef>("RoR2/Base/Bandit2/SlashBlade.asset").WaitForCompletion();
+
             SkillDef rifle = Addressables.LoadAssetAsync<SkillDef>("RoR2/Base/Bandit2/Bandit2Blast.asset").WaitForCompletion();
             LanguageAPI.Add("NewRevolverDesc",
                "<style=cIsdamage>Slayer</style>. <style=cIsHealth>Death Marked</style>. Fire a revolver shot for <style=cIsdamage>600% damage</style>. Kills <style=cIsUtility>reset all your cooldowns</style>. Critical strikes <style=cIsUtility>reset the other skills cooldowns</style>"
                );
 
             LanguageAPI.Add("KEYWORD_DEATH",
-                "<style=cKeywordName>Death Marked</style><style=cSub>Enemies <style=cIsHealth>hemorrhaging</style> take 2.5x more <style=cIsDamage>damage</style>, hitting a <style=cIsHealth>hemorrhaging</style> enemy guarantees <style=cIsDamage>critical strikes</style> for 2 seconds.</style>");
+                "<style=cKeywordName>Death Marked</style><style=cSub>Enemies <style=cIsHealth>hemorrhaging</style> take <style=cIsDamage>2.5X</style> more damage, hitting a <style=cIsHealth>hemorrhaging</style> enemy guarantees <style=cIsDamage>critical strikes</style> for 2 seconds.</style>");
 
             LanguageAPI.Add("NewRifleDesc",
               "Fire a rifle blast for <style=cIsDamage>380% damage</style>. Can hold up to 4 bullets."
@@ -32,6 +34,8 @@ namespace ForgottenSkillsTweaks
             revolver.skillDescriptionToken = "NewRevolverDesc";
 
             rifle.skillDescriptionToken = "NewRifleDesc";
+
+            Blade.baseMaxStock = 2;
 
             revolver.keywordTokens = new string[]
            {

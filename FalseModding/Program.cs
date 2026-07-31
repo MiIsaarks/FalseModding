@@ -10,7 +10,7 @@ using R2API;
 
 namespace ForgottenSkillsTweaks
 {
-    [BepInPlugin("com.MiIsaarks.ForgottenSkillsTweaks", "ForgottenSkillsTweaks", "0.3.1")]
+    [BepInPlugin("com.MiIsaarks.ForgottenSkillsTweaks", "ForgottenSkillsTweaks", "0.4.0")]
     [BepInDependency(R2API.LanguageAPI.PluginGUID)]
     [BepInDependency(R2API.DotAPI.PluginGUID)]
     public class MainPlugin : BaseUnityPlugin
