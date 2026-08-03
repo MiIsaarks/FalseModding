@@ -1,9 +1,7 @@
 ﻿using EntityStates.Railgunner.Weapon;
 using R2API;
 using RoR2.Skills;
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 using UnityEngine.AddressableAssets;
 
 namespace ForgottenSkillsTweaks
