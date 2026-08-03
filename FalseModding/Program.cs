@@ -13,6 +13,7 @@ namespace ForgottenSkillsTweaks
     [BepInPlugin("com.MiIsaarks.ForgottenSkillsTweaks", "ForgottenSkillsTweaks", "0.4.0")]
     [BepInDependency(R2API.LanguageAPI.PluginGUID)]
     [BepInDependency(R2API.DotAPI.PluginGUID)]
+    [BepInDependency("com.rune580.riskofoptions")]
     public class MainPlugin : BaseUnityPlugin
     {
         private static int hitsToLightning = 10;
@@ -22,11 +23,13 @@ namespace ForgottenSkillsTweaks
         private static bool light = false;
         public void Awake()
         {
+            config.init(Config);
             FlameThrowerTweak.init();
             ArrowRainTweak.init();
             BlightTweak.init();
             RailGunner.init();
             Bandit.init();
+
             GameObject Lightning = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC2/FalseSon/LunarStakeLightningStrikeImpactEffect.prefab").WaitForCompletion();
 
             On.EntityStates.FalseSon.LaserFatherCharged.FireBullet += (orig, self, a, b, c, d) =>
