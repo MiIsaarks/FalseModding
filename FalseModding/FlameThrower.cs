@@ -9,6 +9,9 @@ namespace ForgottenSkillsTweaks
 {
     public static class FlameThrowerTweak
     {
+        private static SkillDef FlameThrowerr;
+        private static string OriginalFlameDesc;
+        private static string[] OriginalFlameDesc2;
         private static float newRange = 45f;
         private static float jumpDuration = 0.5f;
         private static float baseSpeedMultiplier = 3.5f;
@@ -22,40 +25,46 @@ namespace ForgottenSkillsTweaks
         public static void init()
         { 
 
-        SkillDef FlameThrowerr = Addressables.LoadAssetAsync<SkillDef>("RoR2/Base/Mage/MageBodyFlamethrower.asset").WaitForCompletion();
+            FlameThrowerr = Addressables.LoadAssetAsync<SkillDef>("RoR2/Base/Mage/MageBodyFlamethrower.asset").WaitForCompletion();
+
+            OriginalFlameDesc = FlameThrowerr.skillDescriptionToken;
+
+            OriginalFlameDesc2 = FlameThrowerr.keywordTokens;
+
+            config.OnConfigChanged += UpdateSkills;
+
+            UpdateSkills();
 
             LanguageAPI.Add("MageFlamethrowerNewDesc", "<style=cIsdamage>Ignite</style>. Burn all enemies in front of you for <style=cIsdamage>5000% damage</style>.");
-            FlameThrowerr.skillDescriptionToken = "MageFlamethrowerNewDesc";
-
-
-            FlameThrowerr.keywordTokens = new string[]
-            {
-                "KEYWORD_IGNITE"
-            };
-
+        
             On.EntityStates.Mage.Weapon.Flamethrower.OnEnter += (orig, self) =>
             {
                 orig(self);
-                self.entryDuration = 0.3f;
 
-                self.tickDamageCoefficient *= 2.5f;
-
-                EntityStates.Mage.Weapon.Flamethrower.ignitePercentChance = 100f;
-
-                self.maxDistance = newRange;
-
-                float scaleRatio = newRange / 16f;
-
-                if(self.characterMotor != null)
+                if (config.FlameThrower.Value)
                 {
-                    self.characterMotor.Motor.ForceUnground(jumpDuration);
+                    self.entryDuration = 0.3f;
 
-                    self.characterMotor.velocity.y = 0f;
+                    self.tickDamageCoefficient *= 2.5f;
+
+                    EntityStates.Mage.Weapon.Flamethrower.ignitePercentChance = 100f;
+
+                    self.maxDistance = newRange;
+
+                    float scaleRatio = newRange / 16f;
+
+                    if (self.characterMotor != null)
+                    {
+                        self.characterMotor.Motor.ForceUnground(jumpDuration);
+
+                        self.characterMotor.velocity.y = 0f;
+
+                    }
+
+                    ScaleFlamethrowerVisual(self.leftFlamethrowerEffectInstance, scaleRatio);
+                    ScaleFlamethrowerVisual(self.rightFlamethrowerEffectInstance, scaleRatio);
 
                 }
-
-                ScaleFlamethrowerVisual(self.leftFlamethrowerEffectInstance, scaleRatio);
-                ScaleFlamethrowerVisual(self.rightFlamethrowerEffectInstance, scaleRatio);
 
             };
 
@@ -63,31 +72,47 @@ namespace ForgottenSkillsTweaks
             {
                 orig(self);
 
-             
-                if (self.fixedAge <= jumpDuration && self.characterMotor != null && self.characterBody != null)
+                if (config.FlameThrower.Value)
                 {
-                   
-                    float normalizedTime = self.fixedAge / jumpDuration;
+                    if (self.fixedAge <= jumpDuration && self.characterMotor != null && self.characterBody != null)
+                    {
 
-                   
-                    float curveValue = speedCurve.Evaluate(normalizedTime);
+                        float normalizedTime = self.fixedAge / jumpDuration;
 
-                   
-                    float currentSpeed = self.characterBody.moveSpeed * baseSpeedMultiplier * curveValue;
 
-                  
-                    self.characterMotor.rootMotion += Vector3.up * (currentSpeed * Time.fixedDeltaTime);
+                        float curveValue = speedCurve.Evaluate(normalizedTime);
 
-                   
-                    self.characterMotor.velocity.y = 0f;
+
+                        float currentSpeed = self.characterBody.moveSpeed * baseSpeedMultiplier * curveValue;
+
+
+                        self.characterMotor.rootMotion += Vector3.up * (currentSpeed * Time.fixedDeltaTime);
+
+
+                        self.characterMotor.velocity.y = 0f;
+                    }
+                    else if (self.fixedAge <= gravityDelay + jumpDuration)
+                    {
+                        self.characterMotor.velocity.y = Mathf.Max(self.characterMotor.velocity.y, 0f);
+                    }
                 }
-                else if(self.fixedAge <= gravityDelay + jumpDuration)
-                {
-                    self.characterMotor.velocity.y = Mathf.Max(self.characterMotor.velocity.y, 0f);
-                }
+               
             };
         }
 
+        private static void UpdateSkills()
+        {
+            if (config.FlameThrower.Value)
+            {
+                FlameThrowerr.skillDescriptionToken = "MageFlamethrowerNewDesc";
+                FlameThrowerr.keywordTokens = new string[] { "KEYWORD_IGNITE" };
+            }
+            else
+            {
+                FlameThrowerr.skillDescriptionToken = OriginalFlameDesc;
+                FlameThrowerr.keywordTokens = OriginalFlameDesc2;
+            }
+        }
 
         private static void ScaleFlamethrowerVisual(GameObject effectInstance, float scaleRatio)
         {
