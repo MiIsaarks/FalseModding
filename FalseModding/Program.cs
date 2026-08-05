@@ -19,6 +19,9 @@ namespace ForgottenSkillsTweaks
         private static int hitsToLightning = 10;
         private static int hitcount = 0;
         private static float? originalDamage = null;
+        private static SkillDef FalseSonLaserF;
+        private static string OriginalFalseSonLaserDesc;
+        private static string[] OriginalFalseSonLaserDesc2;
 
         private static bool light = false;
         public void Awake()
@@ -39,17 +42,17 @@ namespace ForgottenSkillsTweaks
                 light = false;
             };
 
-            On.RoR2.BulletAttack.DefaultHitCallbackImplementation += (orig, self,ref bullethit) =>
+            On.RoR2.BulletAttack.DefaultHitCallbackImplementation += (orig, self, ref bullethit) =>
             {
-    
-             bool b =   orig(self, ref bullethit);
-              
+
+                bool b = orig(self, ref bullethit);
+
 
                 if (!light)
                 {
                     return b;
                 }
-                if (bullethit.entityObject.GetComponent<HealthComponent>() != null)
+                if (bullethit.entityObject.GetComponent<HealthComponent>() != null && config.LaserFather.Value)
                 {
                     hitcount++;
                     if (hitcount % hitsToLightning == 0)
@@ -78,102 +81,150 @@ namespace ForgottenSkillsTweaks
 
             On.EntityStates.FalseSon.LaserFather.OnEnter += (orig, self) =>
             {
-                self.baseChargeDuration = 0.5f;
+                if (config.LaserFather.Value)
+                {
+                    self.baseChargeDuration = 0.5f;
+                }
                 orig(self);
             };
 
-            SkillDef FalseSonLaserF = Addressables.LoadAssetAsync<SkillDef>("RoR2/DLC2/FalseSon/FalseSonBodyLaser.asset").WaitForCompletion();
+            FalseSonLaserF = Addressables.LoadAssetAsync<SkillDef>("RoR2/DLC2/FalseSon/FalseSonBodyLaser.asset").WaitForCompletion();
+
+            OriginalFalseSonLaserDesc = FalseSonLaserF.skillDescriptionToken;
+
+            OriginalFalseSonLaserDesc2 = FalseSonLaserF.keywordTokens;
 
             LanguageAPI.Add("FalseSonLaserDescriptionNew",
                 "Charge a rapidly hitting laser dealing <style=cIsDamage>320%-1890% damage</style> for <style=cIsUtility>4s</style> and refill <style=cIsUtility>Lunar Spikes</style>. " +
                 "Increases in damage through <style=cIsHealing>Growth</style>. Summons <style=cIsDamage>Lightning</style> on repeated hits.");
 
-            FalseSonLaserF.skillDescriptionToken = "FalseSonLaserDescriptionNew";
-
            
+
+
             LanguageAPI.Add("KEYWORD_LASER_LIGHTNING",
                 "<style=cKeywordName>Brother's Lightning</style><style=cSub>Every <style=cIsUtility>10 hits</style> with the laser, call down a lightning strike dealing <style=cIsDamage>350% </style>of the laser's damage.</style>");
 
-           
-            FalseSonLaserF.keywordTokens = new string[]
-            {
-                "KEYWORD_GROWTH",
-                "KEYWORD_LASER_LIGHTNING"
-            };
 
-            FalseSonLaserF.baseRechargeInterval = 10f;
+
+            config.OnConfigChanged += UpdateSkills;
+
+            UpdateSkills();
 
             On.RoR2.FalseSonController.GetGrowthLaserBonusDuration += (orig, self) =>
             {
-                return 0f;
+                if (config.LaserFather.Value)
+                {
+                    return 0f;
+                }
+                return orig(self);
             };
 
             On.RoR2.BulletAttack.Fire += (orig, self) =>
             {
-                if (self.owner != null)
+                if (self.owner != null && config.LaserFather.Value)
                 {
-                 
+
                     CharacterBody body = self.owner.GetComponent<CharacterBody>();
                     if (body != null && body.bodyIndex == BodyCatalog.FindBodyIndex("FalseSonBody"))
                     {
-                       
+
                         EntityStateMachine stateMachine = EntityStateMachine.FindByCustomName(self.owner, "Weapon");
                         if (stateMachine != null && stateMachine.state is EntityStates.FalseSon.LaserFatherCharged)
                         {
-                     
+
                             self.falloffModel = BulletAttack.FalloffModel.None;
 
                         }
                     }
                 }
-               
+
                 orig(self);
             };
 
-            On.EntityStates.FalseSon.LaserFatherCharged.OnEnter += (orig, self) =>
-            {
-                orig(self);
-                float recalc = (self.characterBody.attackSpeed - self.characterBody.baseAttackSpeed)*0.3f;
-                self.fireFrequency = EntityStates.FalseSon.LaserFatherCharged.baseFireFrequency * (1 + recalc);
-
-                hitcount = 1;
-
-                EntityStates.FalseSon.LaserFatherCharged.procCoefficientPerTick = 0.7f;
-
-                SkillLocator skillLocator = self.characterBody.skillLocator;
-                self.spikeRefillAmountPerSecond = 0f;
-
-                if (skillLocator != null)
-                {
-                    
-                float num = skillLocator.GetSkill(SkillSlot.Secondary).maxStock;
-                float num2 = skillLocator.GetSkill(SkillSlot.Secondary).stock;
-                int num3 = (int)(num * 0.5f);
-                self.skillLocator.GetSkill(SkillSlot.Secondary).stock = (int)Mathf.Clamp(num2 + (float)num3, num2, num);
-            }
-
-
-            if (originalDamage == null) 
-                {
-                    originalDamage = EntityStates.FalseSon.LaserFatherCharged.damageCoefficient*1.35f;
-                }
            
-                var growthController = self.characterBody.GetComponent<RoR2.FalseSonController>();
-                if (growthController != null)
+                On.EntityStates.FalseSon.LaserFatherCharged.OnEnter += (orig, self) =>
                 {
-                    int currentGrowth = growthController.growthLevel;
+                    orig(self);
 
+                    if (config.LaserFather.Value)
+                    {
+                        EntityStates.FalseSon.LaserFatherCharged.procCoefficientPerTick = 0.7f;
+
+                        self.spikeRefillAmountPerSecond = 0f;
+                    }
+                    else
+                    {
+                        EntityStates.FalseSon.LaserFatherCharged.procCoefficientPerTick = 0.45f;
+                       
+                    }
+                    float recalc = (self.characterBody.attackSpeed - self.characterBody.baseAttackSpeed) * 0.3f;
+                    self.fireFrequency = EntityStates.FalseSon.LaserFatherCharged.baseFireFrequency * (1 + recalc);
+
+                    hitcount = 1;
+
+                    SkillLocator skillLocator = self.characterBody.skillLocator;
                    
-                    float damageMultiplier = 1f + (currentGrowth * 0.05f);
+                    if (skillLocator != null && config.LaserFather.Value)
+                    {
 
-                    
-                    EntityStates.FalseSon.LaserFatherCharged.damageCoefficient =originalDamage.Value * damageMultiplier;
-                }
+                        float num = skillLocator.GetSkill(SkillSlot.Secondary).maxStock;
+                        float num2 = skillLocator.GetSkill(SkillSlot.Secondary).stock;
+                        int num3 = (int)(num * 0.5f);
+                        self.skillLocator.GetSkill(SkillSlot.Secondary).stock = (int)Mathf.Clamp(num2 + (float)num3, num2, num);
+                    }
 
-               
-               
-            };
 
+                    if (originalDamage == null)
+                    {
+                        originalDamage = EntityStates.FalseSon.LaserFatherCharged.damageCoefficient * 1.35f;
+                    }
+
+                    var growthController = self.characterBody.GetComponent<RoR2.FalseSonController>();
+                    if (growthController != null && config.LaserFather.Value)
+                    {
+                        int currentGrowth = growthController.growthLevel;
+
+
+                        float damageMultiplier = 1f + (currentGrowth * 0.05f);
+
+
+                        EntityStates.FalseSon.LaserFatherCharged.damageCoefficient = originalDamage.Value * damageMultiplier;
+                    }
+                    else
+                    {
+                        EntityStates.FalseSon.LaserFatherCharged.damageCoefficient = originalDamage.Value/1.35f;
+                    }
+
+
+
+                };
+            }
+            
+
+        
+
+        private static void UpdateSkills()
+        {
+            if (config.LaserFather.Value)
+            {
+                FalseSonLaserF.baseRechargeInterval = 10f;
+
+                FalseSonLaserF.skillDescriptionToken = "FalseSonLaserDescriptionNew";
+
+                FalseSonLaserF.keywordTokens = new string[]
+                {
+                    "KEYWORD_GROWTH",
+                    "KEYWORD_LASER_LIGHTNING"
+                };
+            }
+            else
+            {
+                FalseSonLaserF.baseRechargeInterval = 15f;
+
+                FalseSonLaserF.skillDescriptionToken = OriginalFalseSonLaserDesc;
+
+                FalseSonLaserF.keywordTokens = OriginalFalseSonLaserDesc2;
+            }
         }
     }
 }
