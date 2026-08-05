@@ -27,28 +27,28 @@ namespace ForgottenSkillsTweaks
                "Bandit",
                "Lights Out",
                true,
-               "Enables the Lights Out changes.Description changes requires game restart"
+               "Enables the Lights Out changes."
             );
 
             Blast = config.Bind(
               "Bandit",
               "Blast",
               true,
-              "Enables the Blast changes. Description changes requires game restart"
+              "Enables the Blast changes."
            );
 
             Dagger = config.Bind(
               "Bandit",
               "Serrated Dagger",
               true,
-              "Enables the Serrated Dagger changes. Requires game restart"
+              "Enables the Serrated Dagger changes."
            );
 
             FlameThrower = config.Bind(
               "Artificer",
               "Flame Thrower",
               true,
-              "Enables the Flame Thrower changes. Description changes requires game restart"
+              "Enables the Flame Thrower changes."
             );
 
             ArrowRain = config.Bind(
@@ -62,7 +62,7 @@ namespace ForgottenSkillsTweaks
               "Huntress",
               "Blink",
               true,
-              "Enables the Blink changes. Requires game restart"
+              "Enables the Blink changes."
             );
 
             LaserFather = config.Bind(
