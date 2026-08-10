@@ -10,7 +10,7 @@ using R2API;
 
 namespace ForgottenSkillsTweaks
 {
-    [BepInPlugin("com.MiIsaarks.ForgottenSkillsTweaks", "ForgottenSkillsTweaks", "0.4.0")]
+    [BepInPlugin("com.MiIsaarks.ForgottenSkillsTweaks", "ForgottenSkillsTweaks", "0.4.3")]
     [BepInDependency(R2API.LanguageAPI.PluginGUID)]
     [BepInDependency(R2API.DotAPI.PluginGUID)]
     [BepInDependency("com.rune580.riskofoptions")]
@@ -98,7 +98,7 @@ namespace ForgottenSkillsTweaks
                 "Charge a rapidly hitting laser dealing <style=cIsDamage>320%-1890% damage</style> for <style=cIsUtility>4s</style> and refill <style=cIsUtility>Lunar Spikes</style>. " +
                 "Increases in damage through <style=cIsHealing>Growth</style>. Summons <style=cIsDamage>Lightning</style> on repeated hits.");
 
-           
+
 
 
             LanguageAPI.Add("KEYWORD_LASER_LIGHTNING",
@@ -141,67 +141,67 @@ namespace ForgottenSkillsTweaks
                 orig(self);
             };
 
-           
-                On.EntityStates.FalseSon.LaserFatherCharged.OnEnter += (orig, self) =>
+
+            On.EntityStates.FalseSon.LaserFatherCharged.OnEnter += (orig, self) =>
+            {
+                orig(self);
+
+                if (config.LaserFather.Value)
                 {
-                    orig(self);
+                    EntityStates.FalseSon.LaserFatherCharged.procCoefficientPerTick = 0.7f;
 
-                    if (config.LaserFather.Value)
-                    {
-                        EntityStates.FalseSon.LaserFatherCharged.procCoefficientPerTick = 0.7f;
+                    self.spikeRefillAmountPerSecond = 0f;
+                }
+                else
+                {
+                    EntityStates.FalseSon.LaserFatherCharged.procCoefficientPerTick = 0.45f;
 
-                        self.spikeRefillAmountPerSecond = 0f;
-                    }
-                    else
-                    {
-                        EntityStates.FalseSon.LaserFatherCharged.procCoefficientPerTick = 0.45f;
-                       
-                    }
-                    float recalc = (self.characterBody.attackSpeed - self.characterBody.baseAttackSpeed) * 0.3f;
-                    self.fireFrequency = EntityStates.FalseSon.LaserFatherCharged.baseFireFrequency * (1 + recalc);
+                }
+                float recalc = (self.characterBody.attackSpeed - self.characterBody.baseAttackSpeed) * 0.3f;
+                self.fireFrequency = EntityStates.FalseSon.LaserFatherCharged.baseFireFrequency * (1 + recalc);
 
-                    hitcount = 1;
+                hitcount = 1;
 
-                    SkillLocator skillLocator = self.characterBody.skillLocator;
-                   
-                    if (skillLocator != null && config.LaserFather.Value)
-                    {
+                SkillLocator skillLocator = self.characterBody.skillLocator;
 
-                        float num = skillLocator.GetSkill(SkillSlot.Secondary).maxStock;
-                        float num2 = skillLocator.GetSkill(SkillSlot.Secondary).stock;
-                        int num3 = (int)(num * 0.5f);
-                        self.skillLocator.GetSkill(SkillSlot.Secondary).stock = (int)Mathf.Clamp(num2 + (float)num3, num2, num);
-                    }
+                if (skillLocator != null && config.LaserFather.Value)
+                {
+
+                    float num = skillLocator.GetSkill(SkillSlot.Secondary).maxStock;
+                    float num2 = skillLocator.GetSkill(SkillSlot.Secondary).stock;
+                    int num3 = (int)(num * 0.5f);
+                    self.skillLocator.GetSkill(SkillSlot.Secondary).stock = (int)Mathf.Clamp(num2 + (float)num3, num2, num);
+                }
 
 
-                    if (originalDamage == null)
-                    {
-                        originalDamage = EntityStates.FalseSon.LaserFatherCharged.damageCoefficient * 1.35f;
-                    }
+                if (originalDamage == null)
+                {
+                    originalDamage = EntityStates.FalseSon.LaserFatherCharged.damageCoefficient * 1.35f;
+                }
 
-                    var growthController = self.characterBody.GetComponent<RoR2.FalseSonController>();
-                    if (growthController != null && config.LaserFather.Value)
-                    {
-                        int currentGrowth = growthController.growthLevel;
-
-
-                        float damageMultiplier = 1f + (currentGrowth * 0.05f);
+                var growthController = self.characterBody.GetComponent<RoR2.FalseSonController>();
+                if (growthController != null && config.LaserFather.Value)
+                {
+                    int currentGrowth = growthController.growthLevel;
 
 
-                        EntityStates.FalseSon.LaserFatherCharged.damageCoefficient = originalDamage.Value * damageMultiplier;
-                    }
-                    else
-                    {
-                        EntityStates.FalseSon.LaserFatherCharged.damageCoefficient = originalDamage.Value/1.35f;
-                    }
+                    float damageMultiplier = 1f + (currentGrowth * 0.05f);
+
+
+                    EntityStates.FalseSon.LaserFatherCharged.damageCoefficient = originalDamage.Value * damageMultiplier;
+                }
+                else
+                {
+                    EntityStates.FalseSon.LaserFatherCharged.damageCoefficient = originalDamage.Value / 1.35f;
+                }
 
 
 
-                };
-            }
-            
+            };
+        }
 
-        
+
+
 
         private static void UpdateSkills()
         {

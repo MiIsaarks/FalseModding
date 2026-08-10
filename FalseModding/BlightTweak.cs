@@ -68,14 +68,12 @@ namespace ForgottenSkillsTweaks
 
                     GlobalEventManager.instance.OnHitEnemy(damageInfo, self.gameObject);
                     GlobalEventManager.instance.OnHitAll(damageInfo, self.gameObject);
+
+                    return;
                 }
+               
             }
-           
-            else
-            {
                 orig(self, damageInfo);
-            }
-           
         }
 
         static void DotController_InflictDot_refInflictDotInfo(On.RoR2.DotController.orig_InflictDot_refInflictDotInfo orig, ref InflictDotInfo inflictDotInfo)
