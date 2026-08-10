@@ -30,7 +30,8 @@ A mod for Risk of Rain 2 that rebalances and slightly reworks the less used skil
 ##  Artificer Tweaks
 * **Flamethrower:** Greatly increased range. Adds a small jump on cast, tick damage increased by 2.5x, now has 100% ignite chance.
 
-
+## Settings
+* You can disable/enable each of the skills changes in the settings.
 
 ##  Installation
 1. Install [BepInExPack](https://thunderstore.io/package/bbepis/BepInExPack/) and [R2API-Language](https://thunderstore.io/package/RiskofThunder/R2API_Language/).
