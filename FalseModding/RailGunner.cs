@@ -34,6 +34,8 @@ namespace ForgottenSkillsTweaks
 
             config.OnConfigChanged += UpdateSkills;
 
+            UpdateSkills();
+
           
             On.EntityStates.Railgunner.Weapon.BaseFireSnipe.OnEnter += (orig, self) =>
             {
