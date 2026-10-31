@@ -6,19 +6,19 @@ using UnityEngine.Networking;
 
 namespace ForgottenSkillsTweaks
 {
-    
+
     internal sealed class TazerBounceChain
     {
         public int bouncesRemaining;
         public float range = 50f;
-        public bool filterByLoS = true;                            
+        public bool filterByLoS = true;
 
-        public readonly List<HealthComponent> bouncedObjects = new List<HealthComponent>(); 
-        public readonly HashSet<HealthComponent> damaged = new HashSet<HealthComponent>();  
+        public readonly List<HealthComponent> bouncedObjects = new List<HealthComponent>();
+        public readonly HashSet<HealthComponent> damaged = new HashSet<HealthComponent>();
 
         private BullseyeSearch search;
 
-       
+
         public HurtBox PickNextTarget(Vector3 position, TeamIndex ownerTeam)
         {
             if (search == null)
@@ -38,7 +38,7 @@ namespace ForgottenSkillsTweaks
                 HealthComponent hc = hurtBox ? hurtBox.healthComponent : null;
                 if (hc && !bouncedObjects.Contains(hc) && !damaged.Contains(hc))
                 {
-                    bouncedObjects.Add(hc);   
+                    bouncedObjects.Add(hc);
                     return hurtBox;
                 }
             }
@@ -48,7 +48,7 @@ namespace ForgottenSkillsTweaks
 
     public sealed class TazerRicochetController : NetworkBehaviour
     {
-        public int bounces = 3;
+        public int bounces = 2;
         public float bounceRange = 50f;
 
         private static GameObject tazerPrefab;
@@ -80,12 +80,12 @@ namespace ForgottenSkillsTweaks
 
                 HealthComponent hitHealth = hurtBox.healthComponent;
 
-               
+
                 if (ricochet.chain.damaged.Contains(hitHealth))
                     return;
 
-             
-                Vector3 origin = hurtBox.transform.position;     
+
+                Vector3 origin = hurtBox.transform.position;
                 ProjectileDamage pd = self.GetComponent<ProjectileDamage>();
                 float damage = pd.damage;
                 float force = pd.force;
@@ -94,15 +94,15 @@ namespace ForgottenSkillsTweaks
                 GameObject owner = ricochet._projectileController.owner;
                 TazerBounceChain chain = ricochet.chain;
 
-                orig(self, impactInfo);  
+                orig(self, impactInfo);
 
-              
+
                 if (!chain.bouncedObjects.Contains(hitHealth))
                     chain.bouncedObjects.Add(hitHealth);
-
+                TryBounce(chain, origin, damage, force, crit, procChainMask, owner);
             };
 
-          
+
             On.RoR2.HealthComponent.TakeDamage += (orig, self, damageInfo) =>
             {
                 if (NetworkServer.active
@@ -125,7 +125,7 @@ namespace ForgottenSkillsTweaks
 
             if (_pendingChain != null)
             {
-                chain = _pendingChain;      
+                chain = _pendingChain;
                 _pendingChain = null;
             }
             else
@@ -134,7 +134,7 @@ namespace ForgottenSkillsTweaks
             }
         }
 
-       
+
         private static void TryBounce(TazerBounceChain chain, Vector3 origin, float damage, float force,
                                       bool crit, ProcChainMask procChainMask, GameObject owner)
         {
@@ -151,7 +151,7 @@ namespace ForgottenSkillsTweaks
             Vector3 direction = (targetPosition - origin).normalized;
 
             chain.bouncesRemaining--;
-            _pendingChain = chain;         
+            _pendingChain = chain;
 
             ProjectileManager.instance.FireProjectile(new FireProjectileInfo
             {
@@ -166,7 +166,7 @@ namespace ForgottenSkillsTweaks
                 damageTypeOverride = new DamageTypeCombo(DamageType.Shock5s, DamageTypeExtended.Electrical, DamageSource.Secondary),
             });
 
-            _pendingChain = null;           
+            _pendingChain = null;
         }
     }
 }
