@@ -3,9 +3,11 @@ using RoR2.Projectile;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
+using System.Collections.Generic;
 
 namespace ForgottenSkillsTweaks
 {
+    
 
     internal sealed class TazerBounceChain
     {
@@ -60,63 +62,67 @@ namespace ForgottenSkillsTweaks
         [SystemInitializer]
         public static void init()
         {
-            tazerPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Captain/CaptainTazer.prefab").WaitForCompletion();
-
-            if (tazerPrefab && !tazerPrefab.GetComponent<TazerRicochetController>())
-                tazerPrefab.AddComponent<TazerRicochetController>();
-
-            On.RoR2.Projectile.ProjectileImpactExplosion.OnProjectileImpact += (orig, self, impactInfo) =>
+            if (config.Tazer.Value)
             {
-                if (!NetworkServer.active
-                    || !self.TryGetComponent(out TazerRicochetController ricochet)
-                    || ricochet.chain == null
-                    || !impactInfo.collider
-                    || !impactInfo.collider.TryGetComponent(out HurtBox hurtBox)
-                    || !hurtBox.healthComponent)
+                tazerPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Captain/CaptainTazer.prefab").WaitForCompletion();
+
+                if (tazerPrefab && !tazerPrefab.GetComponent<TazerRicochetController>())
+                    tazerPrefab.AddComponent<TazerRicochetController>();
+
+                On.RoR2.Projectile.ProjectileImpactExplosion.OnProjectileImpact += (orig, self, impactInfo) =>
                 {
+                    if (!NetworkServer.active
+                        || !self.TryGetComponent(out TazerRicochetController ricochet)
+                        || ricochet.chain == null
+                        || !impactInfo.collider
+                        || !impactInfo.collider.TryGetComponent(out HurtBox hurtBox)
+                        || !hurtBox.healthComponent)
+                    {
+                        orig(self, impactInfo);
+                        return;
+                    }
+
+                    HealthComponent hitHealth = hurtBox.healthComponent;
+
+
+                    if (ricochet.chain.damaged.Contains(hitHealth))
+                        return;
+
+
+                    Vector3 origin = hurtBox.transform.position;
+                    ProjectileDamage pd = self.GetComponent<ProjectileDamage>();
+                    float damage = pd.damage;
+                    float force = pd.force;
+                    bool crit = pd.crit;
+                    ProcChainMask procChainMask = ricochet._projectileController.procChainMask;
+                    GameObject owner = ricochet._projectileController.owner;
+                    TazerBounceChain chain = ricochet.chain;
+
                     orig(self, impactInfo);
-                    return;
-                }
-
-                HealthComponent hitHealth = hurtBox.healthComponent;
 
 
-                if (ricochet.chain.damaged.Contains(hitHealth))
-                    return;
+                    if (!chain.bouncedObjects.Contains(hitHealth))
+                        chain.bouncedObjects.Add(hitHealth);
+                    TryBounce(chain, origin, damage, force, crit, procChainMask, owner);
+                };
 
 
-                Vector3 origin = hurtBox.transform.position;
-                ProjectileDamage pd = self.GetComponent<ProjectileDamage>();
-                float damage = pd.damage;
-                float force = pd.force;
-                bool crit = pd.crit;
-                ProcChainMask procChainMask = ricochet._projectileController.procChainMask;
-                GameObject owner = ricochet._projectileController.owner;
-                TazerBounceChain chain = ricochet.chain;
-
-                orig(self, impactInfo);
-
-
-                if (!chain.bouncedObjects.Contains(hitHealth))
-                    chain.bouncedObjects.Add(hitHealth);
-                TryBounce(chain, origin, damage, force, crit, procChainMask, owner);
-            };
-
-
-            On.RoR2.HealthComponent.TakeDamage += (orig, self, damageInfo) =>
-            {
-                if (NetworkServer.active
-                    && damageInfo != null
-                    && damageInfo.inflictor
-                    && damageInfo.inflictor.TryGetComponent(out TazerRicochetController ricochet)
-                    && ricochet.chain != null
-                    && !ricochet.chain.damaged.Add(self))
+                On.RoR2.HealthComponent.TakeDamage += (orig, self, damageInfo) =>
                 {
-                    return;
-                }
+                    if (NetworkServer.active
+                        && damageInfo != null
+                        && damageInfo.inflictor
+                        && damageInfo.inflictor.TryGetComponent(out TazerRicochetController ricochet)
+                        && ricochet.chain != null
+                        && !ricochet.chain.damaged.Add(self))
+                    {
+                        return;
+                    }
 
-                orig(self, damageInfo);
-            };
+                    orig(self, damageInfo);
+                };
+            }
+      
         }
 
         private void Awake()
@@ -156,7 +162,7 @@ namespace ForgottenSkillsTweaks
             ProjectileManager.instance.FireProjectile(new FireProjectileInfo
             {
                 projectilePrefab = tazerPrefab,
-                position = origin + direction * 1f,
+                position = origin + direction * 3f,
                 rotation = Util.QuaternionSafeLookRotation(direction),
                 owner = owner,
                 damage = damage,

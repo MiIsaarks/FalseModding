@@ -21,6 +21,7 @@ namespace ForgottenSkillsTweaks
         public static ConfigEntry<bool> HH44;
         public static ConfigEntry<bool> PolarMines;
         public static ConfigEntry<bool> Blight;
+        public static ConfigEntry<bool> Tazer;
         public static void init(ConfigFile config)
         {
             LightsOut = config.Bind(
@@ -93,6 +94,13 @@ namespace ForgottenSkillsTweaks
               "Enables the Blight changes"
             );
 
+            Tazer = config.Bind(
+              "Captain",
+              "Tazer",
+              true,
+              "Enables the Tazer changes"
+            );
+
             BindSettingChanged(LightsOut);
             BindSettingChanged(Blast);
             BindSettingChanged(Dagger);
@@ -103,6 +111,7 @@ namespace ForgottenSkillsTweaks
             BindSettingChanged(HH44);
             BindSettingChanged(PolarMines);
             BindSettingChanged(Blight);
+            BindSettingChanged(Tazer);
 
 
 
@@ -133,6 +142,7 @@ namespace ForgottenSkillsTweaks
             ModSettingsManager.AddOption(new CheckBoxOption(HH44));
             ModSettingsManager.AddOption(new CheckBoxOption(PolarMines));
             ModSettingsManager.AddOption(new CheckBoxOption(Blight));
+            ModSettingsManager.AddOption(new CheckBoxOption(Tazer));
         }
     }
 }

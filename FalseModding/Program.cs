@@ -10,7 +10,7 @@ using R2API;
 
 namespace ForgottenSkillsTweaks
 {
-    [BepInPlugin("com.MiIsaarks.ForgottenSkillsTweaks", "ForgottenSkillsTweaks", "0.4.3")]
+    [BepInPlugin("com.MiIsaarks.ForgottenSkillsTweaks", "ForgottenSkillsTweaks", "0.4.5")]
     [BepInDependency(R2API.LanguageAPI.PluginGUID)]
     [BepInDependency(R2API.DotAPI.PluginGUID)]
     [BepInDependency("com.rune580.riskofoptions")]

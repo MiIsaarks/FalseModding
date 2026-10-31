@@ -36,7 +36,7 @@ namespace ForgottenSkillsTweaks
          );
 
             LanguageAPI.Add("KEYWORD_DEATH",
-                   "<style=cKeywordName>Death Marked</style><style=cSub>Enemies <style=cIsHealth>hemorrhaging</style> take <style=cIsDamage>2.5X</style> more damage, hitting a <style=cIsHealth>hemorrhaging</style> enemy guarantees <style=cIsDamage>critical strikes</style> for 2 seconds.</style>");
+                   "<style=cKeywordName>Death Marked</style><style=cSub>Enemies <style=cIsHealth>hemorrhaging</style> take <style=cIsDamage>2.5X</style> more damage.</style>");
 
             LanguageAPI.Add("NewRifleDesc",
          "Fire a rifle blast for <style=cIsDamage>380% damage</style>. Can hold up to 4 bullets."
@@ -152,7 +152,7 @@ namespace ForgottenSkillsTweaks
 
             bool isResetRevolver = (damageInfo.damageType.damageType & DamageType.ResetCooldownsOnKill) != DamageType.Generic;
 
-            if (self.body && self.body.HasBuff(RoR2Content.Buffs.SuperBleed))
+            /*if (self.body && self.body.HasBuff(RoR2Content.Buffs.SuperBleed))
             {
                 if (isResetRevolver)
                 {
@@ -163,7 +163,7 @@ namespace ForgottenSkillsTweaks
                        body.AddTimedBuff(RoR2Content.Buffs.FullCrit, 2f);
                    }
                 }
-            }
+            }*/
 
             orig(self, damageInfo);
 
